@@ -1,0 +1,50 @@
+<ng-container *ngIf="isLoading$ | async; else loading">
+  <div class="flex justify-center h-[80vh] items-center">
+    <p-progressSpinner></p-progressSpinner>
+  </div>
+</ng-container>
+<ng-template #loading>
+  <div
+    class="flex flex-col md:flex-row items-center justify-evenly h-[80vh] md:p-6"
+  >
+    <div class="px-2 md:px-0 text-center">
+      <h1
+        class="text-2xl text-center md:text-4xl font-bold mb-4 mt-28 md:mt-0 md:mb-0"
+      >
+        Stash all your games you plan to buy here!
+      </h1>
+      <p class="text-center px-4 text-lg md:text-xl md:px-0">
+        Wishlister is a simple app that allows you to keep track of all the
+        games you want to buy.
+      </p>
+
+      <ng-container *ngIf="isAuthenticated$ | async; else unAuthenticated">
+        <!-- eslint-disable-next-line -->
+        <button
+          (click)="redirectToDashboard()"
+          icon="pi pi-list"
+          pButton
+          pRipple
+          class="bg-primary font-bold py-2 px-4 mt-4"
+          label="See your wishlist"
+        ></button
+      ></ng-container>
+      <ng-template #unAuthenticated>
+        <!-- eslint-disable-next-line -->
+        <button
+          (click)="login()"
+          icon="pi pi-user"
+          pButton
+          pRipple
+          class="bg-primary font-bold py-2 px-4 mt-4"
+          label="Join today!"
+        ></button>
+      </ng-template>
+    </div>
+
+    <img
+      class="h-80 w-96 md:h-full md:w-1/2 object-contain"
+      src="../../../assets/pad.png"
+      alt="pad"
+    /></div
+></ng-template>
