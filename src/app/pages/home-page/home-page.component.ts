@@ -12,7 +12,6 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [CommonModule, ButtonModule, RippleModule, ProgressSpinnerModule],
   templateUrl: './home-page.component.html',
-  styleUrl: './home-page.component.scss',
 })
 export class HomePageComponent {
   protected isAuthenticated$: Observable<boolean> = this.auth.isAuthenticated$;
