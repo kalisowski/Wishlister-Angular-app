@@ -1,19 +1,15 @@
-<div class="flex flex-col h-[80vh] items-center">
-  <p-toolbar>
-    <div class="p-toolbar-group-start">
-      <button pButton icon="pi pi-plus" class="bg-primary p-2 mr-2"></button>
-      <button pButton icon="pi pi-print" class="bg-primary p-2 mr-2"></button>
-      <button pButton icon="pi pi-upload" class="bg-primary p-2"></button>
+<div class="flex flex-column items-center mt-2">
+  <p-toolbar class="p-0">
+    <div class="p-toolbar-group-start flex gap-2">
+      <!-- TODO: sort buttons and display styles etc -->
+      <button pButton icon="pi pi-plus" label="test"></button>
+      <button pButton icon="pi pi-print" label="test"></button>
+      <button pButton icon="pi pi-upload" label="test"></button>
     </div>
     <div class="p-toolbar-group-center">
       <span class="p-input-icon-left">
         <i class="pi pi-search"></i>
-        <input
-          type="text"
-          class="pl-5 border rounded-md p-2"
-          placeholder="Search"
-          pInputText
-        />
+        <input type="text" placeholder="Search" pInputText />
       </span>
     </div>
     <div class="p-toolbar-group-end">
@@ -22,7 +18,6 @@
         icon="pi pi-plus"
         pButton
         pRipple
-        class="bg-primary font-bold p-2 w-fit pr-3 h-fit ml-2"
         label="Add game"
         (click)="addNewGame()"
       ></button>
