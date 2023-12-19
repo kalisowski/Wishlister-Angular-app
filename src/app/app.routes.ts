@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { LoginComponent } from './pages/login/login.component';
 
 import { AuthGuard } from '@auth0/auth0-angular';
 import { NotFoundComponent } from './components/not-found/not-found.component';
@@ -23,15 +22,11 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
-    path: 'login',
-    component: LoginComponent,
-  },
-  {
     path: 'game/new',
     component: GameFormComponent,
   },
   {
     path: '**',
-    component: LoginComponent,
+    component: NotFoundComponent,
   },
 ];
