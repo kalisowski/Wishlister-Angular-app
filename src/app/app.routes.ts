@@ -3,8 +3,8 @@ import { HomePageComponent } from './pages/home-page/home-page.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 
 import { AuthGuard } from '@auth0/auth0-angular';
-import { NotFoundComponent } from './components/not-found/not-found.component';
-import { GameFormComponent } from './components/game-form/game-form.component';
+import { NotFoundComponent } from './pages/not-found/not-found.component';
+import { GameFormComponent } from './pages/game-form/game-form.component';
 
 export const routes: Routes = [
   {
