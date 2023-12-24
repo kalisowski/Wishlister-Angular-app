@@ -1,0 +1,21 @@
+<div [formGroup]="purchaseLinksForm" class="flex flex-column">
+  <p-inputGroup>
+    <input
+      [ngClass]="{
+        'ng-invalid ng-dirty':
+          purchaseLinksForm.controls.purchaseLink.invalid && (purchaseLinksForm.controls.purchaseLink.dirty || purchaseLinksForm.controls.purchaseLink.touched)
+      }"
+      type="url"
+      pInputText
+      formControlName="purchaseLink"
+      placeholder="Shop Link" />
+    <button pButton pRipple type="button" (click)="remove.emit()" icon="pi pi-trash"></button> </p-inputGroup
+  ><small
+    id="title-help"
+    class="p-error"
+    *ngIf="
+      purchaseLinksForm.controls.purchaseLink.invalid && (purchaseLinksForm.controls.purchaseLink.dirty || purchaseLinksForm.controls.purchaseLink.touched)
+    ">
+    Link is required and must be a valid URL.
+  </small>
+</div>
