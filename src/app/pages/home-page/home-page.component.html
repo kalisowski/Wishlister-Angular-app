@@ -1,11 +1,11 @@
 <ng-container *ngIf="isLoading$ | async; else loading">
-  <div class="flex flex-column mt-8">
+  <div class="flex h-full flex-column justify-content-center">
     <p-progressSpinner></p-progressSpinner>
   </div>
 </ng-container>
 <ng-template #loading>
   <div
-    class="flex flex-column flex-grow-1 md:flex-row align-items-center justify-content-evenly md:p-6"
+    class="flex flex-column h-full md:flex-row align-items-center justify-content-evenly md:p-6"
   >
     <div class="px-2 md:px-0 text-center">
       <h1
@@ -44,7 +44,7 @@
         src="../../../assets/pad.png"
         class="overflow-auto"
         alt="pad"
-        style="max-width: 70%; height: auto"
+        style="max-width: 70%; object-fit: contain"
       />
     </div>
   </div>
