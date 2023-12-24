@@ -1,42 +1,18 @@
-<div
-  class="flex bg-primary-800 align-items-center border-bottom-1 border-primary-900 p-2 sm:p-4"
->
+<div class="flex bg-primary-800 align-items-center border-bottom-1 border-primary-900 shadow-2 p-2 sm:p-4">
   <p-menubar *ngIf="!loading" class="w-full !p-0" [model]="items">
     <ng-template pTemplate="start">
       <div class="flex align-items-center">
-        <img
-          alt="Wishlister logo"
-          src="../../../assets/game-controller.svg"
-          class="mx-2 shadow-1 border-circle p-1 bg-white sm:block hidden"
-          width="48"
-        />
-        <h1
-          class="mr-2 font-bold text-xl align-items-center text-primary-600 hidden sm:block"
-        >
-          Wishlister
-        </h1>
-        <h1
-          class="mr-2 my-0 my-0 py-0 font-bold text-lg text-primary-600 sm:hidden flex"
-        >
-          W
-        </h1>
+        <img alt="Wishlister logo" src="../../../assets/game-controller.svg" class="mx-2 shadow-1 border-circle p-1 bg-white sm:block hidden" width="48" />
+        <h1 class="mr-2 font-bold text-xl align-items-center text-primary-600 hidden sm:block">Wishlister</h1>
+        <h1 class="mr-2 my-0 my-0 py-0 font-bold text-lg text-primary-600 sm:hidden flex">W</h1>
       </div>
     </ng-template>
     <ng-template pTemplate="end">
       <div *ngIf="auth.user$ | async as user" class="flex align-items-center">
-        <p class="ml-2 my-0">{{ user.name ? user.name : "User" }}</p>
-        <img
-          [src]="user.picture ? user.picture : 'default'"
-          alt="User Avatar"
-          class="border-circle object-cover h-2rem sm:block sm:h-3rem mx-2 shadow-1"
-        />
+        <p class="ml-2 my-0">{{ user.name ? user.name : 'User' }}</p>
+        <img [src]="user.picture ? user.picture : 'default'" alt="User Avatar" class="border-circle object-cover h-2rem sm:block sm:h-3rem mx-2 shadow-1" />
       </div>
     </ng-template>
   </p-menubar>
-  <p-progressBar
-    *ngIf="loading"
-    class="w-full mx-10 my-4 sm:my-5"
-    mode="indeterminate"
-    [style]="{ height: '6px' }"
-  ></p-progressBar>
+  <p-progressBar *ngIf="loading" class="w-full mx-10 my-4 sm:my-5" mode="indeterminate" [style]="{ height: '6px' }"></p-progressBar>
 </div>
