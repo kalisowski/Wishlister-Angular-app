@@ -7,6 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { RippleModule } from 'primeng/ripple';
 import { CommonModule } from '@angular/common';
+import { ValidationDisplayService } from 'src/app/services/validation-display.service';
 
 @Component({
   selector: 'app-purchase-links-form',
@@ -17,4 +18,10 @@ import { CommonModule } from '@angular/common';
 export class PurchaseLinksComponent {
   @Input() public purchaseLinksForm!: FormGroup<PurchaseLinksForm>;
   @Output() public remove: EventEmitter<number> = new EventEmitter<number>();
+
+  public constructor(private validationDisplay: ValidationDisplayService) {}
+
+  public getErrorMessage(controlName: string): string {
+    return this.validationDisplay.getErrorMessage(controlName, this.purchaseLinksForm);
+  }
 }
