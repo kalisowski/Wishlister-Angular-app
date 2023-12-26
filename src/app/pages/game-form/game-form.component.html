@@ -89,7 +89,7 @@
     <div class="releaseStatus flex flex-column align-items-center sm:flex-row sm:justify-content-between gap-2">
       <div class="flex gap-2 align-items-center">
         <span class="text-primary-600 font-bold">Is it out yet?</span>
-        <p-toggleButton formControlName="releaseStatus" id="releaseStatusButton" onLabel="Yes" offLabel="No"></p-toggleButton>
+        <p-toggleButton formControlName="releaseStatus" id="releaseStatusButton" onLabel="No" offLabel="Yes"></p-toggleButton>
       </div>
       <p-button (onClick)="addPurchaseLink()" label="Add shop link"></p-button>
     </div>
@@ -113,7 +113,7 @@
       </div>
     </div>
     <div class="w-full text-center">
-      <p-multiSelect styleClass="w-full" [options]="tags" [group]="true" formControlName="selectedTags" optionLabel="label" placeholder="Select tags"
+      <p-multiSelect styleClass="w-full" [options]="tags" [group]="true" formControlName="tags" optionLabel="label" placeholder="Select tags"
         ><ng-template let-group pTemplate="group">
           <div class="flex align-items-center">
             <span>{{ group.label }}</span>
