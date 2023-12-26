@@ -1,9 +1,8 @@
-<div
-  class="flex flex-column align-items-center h-full w-screen items-center mt-2"
->
+<div class="flex flex-column align-items-center h-full w-screen items-center mt-2">
   <p-toolbar class="p-0 w-auto">
     <div class="p-toolbar-group-start flex gap-2">
       <!-- TODO: sort buttons and display styles etc -->
+      <!-- due to primeNG button syntax linter config signals an error -->
       <button pButton icon="pi pi-plus" label="test"></button>
       <button pButton icon="pi pi-print" label="test"></button>
       <button pButton icon="pi pi-upload" label="test"></button>
@@ -16,13 +15,12 @@
     </div>
     <div class="p-toolbar-group-end">
       <!-- eslint-disable-next-line -->
-      <button
-        icon="pi pi-plus"
-        pButton
-        pRipple
-        label="Add game"
-        (click)="addNewGame()"
-      ></button>
+      <button icon="pi pi-plus" pButton pRipple label="Add game" (click)="addNewGame()"></button>
     </div>
   </p-toolbar>
+  <div class="flex w-11 justify-content-center" *ngFor="let game of games">
+    <div class="w-11 bg-blue-100">
+      <p>{{ game.title }}</p>
+    </div>
+  </div>
 </div>
