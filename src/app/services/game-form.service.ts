@@ -19,8 +19,8 @@ export class GameFormService {
     wishlistPriority: new FormControl<number | null>(null, [Validators.required, Validators.min(1), Validators.max(5)]),
     releaseStatus: new FormControl<boolean>(false),
     releaseDate: new FormControl(null),
-    selectedTags: new FormControl([]),
-    purchaseLinks: new FormArray<FormGroup<PurchaseLinksForm>>([], [Validators.required, Validators.pattern('https?://.+')]),
+    tags: new FormControl<TagItem[]>([]),
+    purchaseLinks: new FormArray<FormGroup<PurchaseLinksForm>>([]),
     personalNotes: new FormControl(null, Validators.maxLength(255)),
   });
 
@@ -28,7 +28,12 @@ export class GameFormService {
     const purchaseLinks: FormArray = this.gameForm.get('purchaseLinks') as FormArray;
     purchaseLinks.push(
       new FormGroup({
-        purchaseLink: new FormControl(null, Validators.required),
+        purchaseLink: new FormControl(null, [
+          Validators.required,
+          Validators.pattern(
+            `(https?://(?:www.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9].[^s]{2,}|www.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9].[^s]{2,}|https?://(?:www.|(?!www))[a-zA-Z0-9]+.[^s]{2,}|www.[a-zA-Z0-9]+.[^s]{2,})`
+          ),
+        ]),
       })
     );
   }
