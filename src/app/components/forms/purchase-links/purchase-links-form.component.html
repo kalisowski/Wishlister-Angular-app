@@ -15,7 +15,7 @@
     class="p-error"
     *ngIf="
       purchaseLinksForm.controls.purchaseLink.invalid && (purchaseLinksForm.controls.purchaseLink.dirty || purchaseLinksForm.controls.purchaseLink.touched)
-    ">
-    Link is required and must be a valid URL.
-  </small>
+    "
+    >{{ getErrorMessage('purchaseLink') }}</small
+  >
 </div>
