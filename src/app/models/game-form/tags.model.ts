@@ -1,7 +1,7 @@
 export interface TagItem {
-  label: string;
-  value: string;
-  items?: TagItem[];
+  readonly label: string;
+  readonly value: string;
+  readonly items?: TagItem[];
 }
 
 export const groupedTags: TagItem[] = [
