@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { type FormArray, type FormGroup, ReactiveFormsModule, AbstractControl } from '@angular/forms';
+import { type FormArray, type FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputGroupModule } from 'primeng/inputgroup';
@@ -13,11 +13,15 @@ import { ToggleButtonModule } from 'primeng/togglebutton';
 import { GameFormService } from 'src/app/services/game-form.service';
 import { MessagesModule } from 'primeng/messages';
 import { MessageModule } from 'primeng/message';
-import { type GameForm, type PurchaseLinksForm } from 'src/app/models/game-form/game-form.model';
+import { ParsedForm, type GameForm, type PurchaseLinksForm, UpdatedForm } from 'src/app/models/game-form/game-form.model';
 import { PurchaseLinksComponent } from 'src/app/components/forms/purchase-links/purchase-links-form.component';
 import { type TagItem } from 'src/app/models/game-form/tags.model';
 import { DateRequiredDirective } from 'src/app/validators/date-required-if.directive';
 import { RouterLink } from '@angular/router';
+import { ValidationDisplayService } from 'src/app/services/validation-display.service';
+import { GamesApiService } from 'src/app/features/services/games-api.service';
+import { Game } from 'src/app/features/dto/game.model';
+import { AuthUserService } from 'src/app/services/auth-user.service';
 
 @Component({
   selector: 'app-game-form',
@@ -49,11 +53,20 @@ export class GameFormComponent implements OnInit {
   protected date: Date = new Date();
   protected tomorrow: string = '';
 
-  public constructor(private gameFormService: GameFormService) {}
+  public constructor(
+    private gameFormService: GameFormService,
+    private validationDisplay: ValidationDisplayService,
+    private gamesApiService: GamesApiService,
+    private authUser: AuthUserService
+  ) {}
 
   public ngOnInit(): void {
     const date: Date = new Date();
     this.date.setDate(date.getDate() + 1);
+  }
+
+  public getErrorMessage(controlName: string): string {
+    return this.validationDisplay.getErrorMessage(controlName, this.gameForm);
   }
 
   public get purchaseLinks(): FormArray<FormGroup<PurchaseLinksForm>> {
@@ -75,30 +88,46 @@ export class GameFormComponent implements OnInit {
   protected onSubmit(): void {
     if (this.gameForm.invalid) {
       this.gameForm.markAllAsTouched();
-      console.log(this.gameForm.controls);
 
       return;
     }
-    console.log(this.gameForm.value);
-  }
 
-  protected getErrorMessage(controlName: string): string {
-    const control: AbstractControl | null = this.gameForm.get(controlName);
+    const parsedForm: ParsedForm = this.gameForm.getRawValue();
 
-    if (control?.errors?.['required']) {
-      return `${controlName} is required.`;
-    }
+    // TODO: Ask the tutor about this because It's getting out of hand with the amount of data conversions I'm doing.
+    // Because of the linter config I need explicit types for everything.
+    // eslint-disable-next-line complexity
+    // this.authUser.getUserId().subscribe((userId: string) => {
+    //   const updatedForm: UpdatedForm = {
+    //     ...parsedForm,
+    //     purchaseLinks: parsedForm.purchaseLinks!.map((link: { purchaseLink: string | null }) => (link.purchaseLink ? link.purchaseLink : '')),
+    //     tags: parsedForm.tags?.map((tag: TagItem) => tag.value) ?? [],
+    //     owner: userId,
+    //     title: parsedForm.title || '',
+    //     platform: parsedForm.platform || '',
+    //     genre: parsedForm.genre || '',
+    //     developer: parsedForm.developer || '',
+    //     price: parsedForm.price || 0,
+    //     wishlistPriority: parsedForm.wishlistPriority || 0,
+    //     releaseStatus: parsedForm.releaseStatus || false,
+    //   };
+    //   console.log(updatedForm);
+    //   this.gamesApiService.createGame(updatedForm).subscribe((response: Game) => {
+    //     console.log(response);
+    //   });
+    // });
 
-    if (control?.errors?.['maxlength']) {
-      return `${controlName} cannot be longer than ${control.errors['maxlength'].requiredLength} characters.`;
-    }
-    if (this.gameForm.errors?.['dateRequired']) {
-      return 'Release date is required if out status set to true.';
-    }
-    if (this.gameForm.errors?.['pattern']) {
-      return 'Purchase link must be a valid URL.';
-    }
-
-    return '';
+    this.authUser.getUserId().subscribe((userId: string) => {
+      const updatedForm: any = {
+        ...parsedForm,
+        purchaseLinks: parsedForm.purchaseLinks!.map((link: { purchaseLink: string | null }) => (link.purchaseLink ? link.purchaseLink : '')),
+        tags: parsedForm.tags?.map((tag: TagItem) => tag.value) ?? [],
+        owner: userId,
+      };
+      console.log(updatedForm);
+      this.gamesApiService.createGame(updatedForm).subscribe((response: Game) => {
+        console.log(response);
+      });
+    });
   }
 }
