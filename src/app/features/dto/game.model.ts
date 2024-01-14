@@ -1,14 +1,14 @@
 export interface Game {
-  id: string;
-  title: string;
-  platform: string;
-  genre: string;
-  developer: string;
-  price: number;
-  wishlistPriority: number;
-  releaseStatus: boolean;
-  releaseDate: Date | null;
-  tags: string[];
-  purchaseLinks: string[];
-  personalNotes: string | null;
+  readonly [key: string]: string | number | boolean | string[];
+  readonly id: string;
+  readonly title: string;
+  readonly platform: string;
+  readonly developer: string;
+  readonly price: number;
+  readonly wishlistPriority: number;
+  readonly releaseStatus: boolean;
+  readonly releaseDate: string;
+  readonly tags: string[];
+  readonly purchaseLinks: string[];
+  readonly personalNotes: string;
 }
