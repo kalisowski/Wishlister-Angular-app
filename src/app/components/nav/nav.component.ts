@@ -4,28 +4,18 @@ import { AuthModule, AuthService } from '@auth0/auth0-angular';
 import { MenuItem } from 'primeng/api';
 import { MenubarModule } from 'primeng/menubar';
 import { ProgressBarModule } from 'primeng/progressbar';
-import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-nav',
   standalone: true,
-  imports: [
-    CommonModule,
-    MenubarModule,
-    AuthModule,
-    ProgressBarModule,
-    ToastModule,
-  ],
+  imports: [CommonModule, MenubarModule, AuthModule, ProgressBarModule],
   templateUrl: './nav.component.html',
 })
 export class NavComponent implements OnInit, OnDestroy {
   protected loading: boolean = true;
   protected items: MenuItem[] = [];
 
-  public constructor(
-    protected auth: AuthService,
-    @Inject(DOCUMENT) private doc: Document
-  ) {}
+  public constructor(protected auth: AuthService, @Inject(DOCUMENT) private doc: Document) {}
 
   public loginWithRedirect(): void {
     this.auth.loginWithRedirect();
@@ -60,8 +50,7 @@ export class NavComponent implements OnInit, OnDestroy {
       this.items.push({
         label: isAuthenticated ? 'Logout' : 'Login',
         icon: 'pi pi-user',
-        command: () =>
-          isAuthenticated ? this.logout() : this.loginWithRedirect(),
+        command: () => (isAuthenticated ? this.logout() : this.loginWithRedirect()),
       });
       this.loading = false;
     });
