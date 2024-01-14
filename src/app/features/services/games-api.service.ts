@@ -17,7 +17,9 @@ export class GamesApiService {
     return this.httpClient.get<Game[]>(environment.API_URL + '/games');
   }
 
-  // ...
+  public getGamesOfUser(id: string): Observable<Game[]> {
+    return this.httpClient.get<Game[]>(environment.API_URL + `/user/${id}/games`);
+  }
 
   public createGame(game: CreateGame): Observable<Game> {
     const headers: HttpHeaders = new HttpHeaders({ 'content-type': 'application/json' });
@@ -25,7 +27,15 @@ export class GamesApiService {
     return this.httpClient.post<Game>(`${environment.API_URL}/games`, game, { headers: headers });
   }
 
-  // ...
+  public getGame(id: string): Observable<Game> {
+    return this.httpClient.get<Game>(`${environment.API_URL}/games/${id}`);
+  }
+
+  public updateGame(id: string, game: CreateGame): Observable<Game> {
+    const headers: HttpHeaders = new HttpHeaders({ 'content-type': 'application/json' });
+
+    return this.httpClient.put<Game>(`${environment.API_URL}/games/${id}`, game, { headers: headers });
+  }
 
   public deleteGame(id: string): Observable<void> {
     return this.httpClient.delete<void>(`${environment.API_URL}/games/${id}`);
