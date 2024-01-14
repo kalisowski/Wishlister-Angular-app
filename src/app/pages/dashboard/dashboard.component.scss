@@ -1,0 +1,11 @@
+.tableSize {
+  height: calc(100vh - 320px);
+  overflow: auto;
+
+  @media (max-width: 576px) {
+    height: calc(100vh - 272px);
+  }
+  @media (max-width: 320px) {
+    height: calc(100vh - 320px);
+  }
+}
