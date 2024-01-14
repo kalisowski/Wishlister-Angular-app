@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AbstractControl, FormGroup } from '@angular/forms';
+import { type AbstractControl, type FormGroup } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +17,12 @@ export class ValidationDisplayService {
     if (control?.errors?.['required']) {
       return `${controlParsed} is required.`;
     }
-
+    if (control?.errors?.['min']) {
+      return `${controlParsed} cannot be less than ${control.errors['min'].min}.`;
+    }
+    if (control?.errors?.['max']) {
+      return `${controlParsed} cannot be greater than ${control.errors['max'].max}.`;
+    }
     if (control?.errors?.['maxlength']) {
       return `${controlParsed} cannot be longer than ${control.errors['maxlength'].requiredLength} characters.`;
     }
