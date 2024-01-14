@@ -1,26 +1,124 @@
-<div class="flex flex-column align-items-center h-full w-screen items-center mt-2">
-  <p-toolbar class="p-0 w-auto">
-    <div class="p-toolbar-group-start flex gap-2">
-      <!-- TODO: sort buttons and display styles etc -->
-      <!-- due to primeNG button syntax linter config signals an error -->
-      <button pButton icon="pi pi-plus" label="test"></button>
-      <button pButton icon="pi pi-print" label="test"></button>
-      <button pButton icon="pi pi-upload" label="test"></button>
-    </div>
-    <div class="p-toolbar-group-center">
+<ng-container *ngIf="isLoading$ | async; else loading">
+  <div class="flex h-full flex-column align-items-center"><p-progressSpinner></p-progressSpinner></div>
+</ng-container>
+<ng-template #loading>
+  <div class="flex flex-column align-items-center h-full">
+    <div class="flex tw-bg-slate-50 p-2 sm:mt-2 gap-2 border-round border-1 align-items-center justify-content-center flex-wrap w-full sm:w-fit">
       <span class="p-input-icon-left">
         <i class="pi pi-search"></i>
-        <input type="text" placeholder="Search" pInputText />
+        <input
+          class="w-11rem sm:w-18rem"
+          [(ngModel)]="searchInput"
+          (ngModelChange)="this.searchInputUpdate.next($event)"
+          type="text"
+          placeholder="Search"
+          pInputText />
       </span>
+      <!-- due to primeNG button syntax linter config signals an error -->
+      <p-toggleButton (onChange)="handleDisplayChange()" [onIcon]="'pi pi-th-large'" offIcon="pi pi-list"></p-toggleButton>
+      <p-button [outlined]="true" (click)="addNewGame()">
+        <i class="pi pi-plus py-1"></i>
+        <span class="ml-2 font-bold hidden sm:inline">Add game</span>
+      </p-button>
     </div>
-    <div class="p-toolbar-group-end">
-      <!-- eslint-disable-next-line -->
-      <button icon="pi pi-plus" pButton pRipple label="Add game" (click)="addNewGame()"></button>
+    <div *ngIf="gamesLoading" class="flex flex-grow-1 flex-column justify-content-center">
+      <p-progressSpinner></p-progressSpinner>
     </div>
-  </p-toolbar>
-  <div class="flex w-11 justify-content-center" *ngFor="let game of games">
-    <div class="w-11 bg-blue-100">
-      <p>{{ game.title }}</p>
+    <div *ngIf="!gamesLoading && error" class="flex flex-grow-1 flex-column justify-content-center">
+      <p-message severity="error" text="Failed loading games, please try again later..."></p-message>
+    </div>
+    <div
+      *ngIf="!gamesLoading && displayChecked && !error"
+      class="flex justify-content-center w-screen tw-bg-slate-50 tableSize overflow-auto py-3 my-2 px-0 mx-0 border-2 shadow-1">
+      <div class="grid w-12 md:w-10">
+        <ng-container *ngFor="let game of processedGames">
+          <!-- Grid layout -->
+          <div class="h-auto col-12 lg:col-3">
+            <div
+              [routerLink]="['/game', game.id]"
+              routerLinkActive="router-link-active"
+              class="w-full h-15rem bg-white hover:bg-primary-100 hover:border-primary-200 p-3 cursor-pointer border-round border-1 border-primary-100 shadow-1">
+              <h5>{{ game.title }}</h5>
+              <p>{{ game.platform }}</p>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+    <div
+      *ngIf="!gamesLoading && !displayChecked && !error"
+      class="flex flex-column align-items-center w-screen tw-bg-slate-50 tableSize overflow-auto shadow-2 my-2">
+      <div class="sticky top-0 flex justify-content-center align-items-center w-full bg-white border-bottom-1 mb-3 tw-bg-slate-50">
+        <div *ngIf="!gamesLoading" class="grid my-1 px-2 w-12 md:w-10">
+          <div *ngFor="let key of objectKeys(buttonSortStates)" [ngClass]="buttonSortStates[key].class + ' flex flex-column flex-wrap gap-2'">
+            <div class="flex gap-2">
+              <span>{{ key === 'releaseDate' ? 'date' : key !== 'wishlistPriority' ? key : 'priority' }}</span>
+              <p-triStateCheckbox *ngIf="key === 'releaseDate'" [(ngModel)]="dateState" (click)="processGamesData()" inputId="tricheckbox"></p-triStateCheckbox>
+            </div>
+            <div class="flex flex-wrap gap-1">
+              <p-toggleButton
+                styleClass="p-0"
+                *ngIf="key !== 'releaseDate'"
+                [(ngModel)]="buttonSortStates[key].state"
+                [onIcon]="'pi pi-sort-alpha-down'"
+                offIcon="pi pi-sort-alpha-up"
+                (click)="toggleSortButton(key)"></p-toggleButton>
+              <p-toggleButton
+                styleClass="p-0"
+                *ngIf="key !== 'releaseDate'"
+                [(ngModel)]="buttonSearchStates[key]"
+                [onIcon]="'pi pi-search'"
+                offIcon="pi pi-search"
+                (click)="toggleSearchButton(key)"></p-toggleButton>
+              <!-- date button with separate logic -->
+              <p-toggleButton
+                styleClass="p-0"
+                *ngIf="dateState === false && key === 'releaseDate'"
+                [(ngModel)]="buttonSortStates[key].state"
+                [onIcon]="'pi pi-sort-alpha-down'"
+                offIcon="pi pi-sort-alpha-up"
+                (click)="toggleSortButton(key)"></p-toggleButton>
+              <p-toggleButton
+                styleClass="p-0"
+                *ngIf="dateState === false && key === 'releaseDate'"
+                [(ngModel)]="buttonSearchStates[key]"
+                [onIcon]="'pi pi-search'"
+                offIcon="pi pi-search"
+                (click)="toggleSearchButton(key)"></p-toggleButton>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="games.length === 0" class="mt-2">
+        <p class="text-center">Nothing here!</p>
+        <p class="text-center">You can add a <a [routerLink]="['/game/new']" class="text-primary font-semibold">new game.</a></p>
+      </div>
+      <div *ngFor="let game of processedGames" class="px-2 w-12 md:w-10">
+        <!-- List layout -->
+        <div *ngIf="!displayChecked" class="flex flex-column gap-2 w-full">
+          <div [routerLink]="['/game', game.id]">
+            <div class="grid bg-white hover:bg-primary-100 hover:border-primary-200 p-2 mb-3 cursor-pointer border-round border-1 border-primary-100 shadow-2">
+              <h5 class="col-2">{{ game.title }}</h5>
+              <p class="col-2">{{ game.platform }}</p>
+              <p class="col-2 hidden sm:inline">{{ game.tags.join(', ') }}</p>
+              <p class="col-2">{{ game.developer }}</p>
+              <p class="col-2" *ngIf="game.releaseStatus">{{ game.releaseDate }}</p>
+              <p class="col-2" *ngIf="!game.releaseStatus">released</p>
+              <p class="col-1">{{ game.wishlistPriority }}</p>
+              <p class="col-1">{{ game.price === 0 ? 'F2P' : game.price }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sticky bottom-0 w-full border-top-1">
+      <p-paginator
+        (onPageChange)="onPageChange($event)"
+        [first]="firstPagi"
+        [rows]="rowsPagi"
+        [totalRecords]="recordsPagi"
+        [rowsPerPageOptions]="[10, 20, 30]"></p-paginator>
     </div>
   </div>
-</div>
+</ng-template>
