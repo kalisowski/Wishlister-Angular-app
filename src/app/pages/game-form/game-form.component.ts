@@ -3,33 +3,27 @@ import { type FormArray, type FormGroup, ReactiveFormsModule } from '@angular/fo
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputGroupModule } from 'primeng/inputgroup';
-import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { CalendarModule } from 'primeng/calendar';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { GameFormService } from 'src/app/services/game-form.service';
-import { MessagesModule } from 'primeng/messages';
-import { MessageModule } from 'primeng/message';
 import { ParsedForm, type GameForm, type PurchaseLinksForm, UpdatedForm } from 'src/app/models/game-form/game-form.model';
 import { PurchaseLinksComponent } from 'src/app/components/forms/purchase-links/purchase-links-form.component';
 import { type TagItem } from 'src/app/models/game-form/tags.model';
 import { DateRequiredDirective } from 'src/app/validators/date-required-if.directive';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ValidationDisplayService } from 'src/app/services/validation-display.service';
 import { GamesApiService } from 'src/app/features/services/games-api.service';
-import { Game } from 'src/app/features/dto/game.model';
+import { type Game } from 'src/app/features/dto/game.model';
 import { AuthUserService } from 'src/app/services/auth-user.service';
 
 @Component({
   selector: 'app-game-form',
   standalone: true,
   imports: [
-    RouterLink,
-    MessagesModule,
-    MessageModule,
     DateRequiredDirective,
     PurchaseLinksComponent,
     CommonModule,
@@ -37,7 +31,6 @@ import { AuthUserService } from 'src/app/services/auth-user.service';
     ButtonModule,
     CardModule,
     InputGroupModule,
-    InputGroupAddonModule,
     MultiSelectModule,
     CheckboxModule,
     InputTextModule,
@@ -48,25 +41,56 @@ import { AuthUserService } from 'src/app/services/auth-user.service';
   templateUrl: './game-form.component.html',
 })
 export class GameFormComponent implements OnInit {
+  public editForm: boolean = false;
   protected gameForm: FormGroup<GameForm> = this.gameFormService.gameForm;
   protected tags: TagItem[] = this.gameFormService.tags;
   protected date: Date = new Date();
   protected tomorrow: string = '';
+  protected gameId: string | null = null;
+  private initialFormState!: Game;
 
   public constructor(
+    private router: Router,
+    private route: ActivatedRoute,
     private gameFormService: GameFormService,
     private validationDisplay: ValidationDisplayService,
     private gamesApiService: GamesApiService,
-    private authUser: AuthUserService
+    private authUser: AuthUserService,
+    private location: Location
   ) {}
 
   public ngOnInit(): void {
     const date: Date = new Date();
     this.date.setDate(date.getDate() + 1);
+    this.gameId = this.route.snapshot.paramMap.get('id');
+    if (this.gameId) {
+      this.editForm = true;
+      this.gamesApiService.getGame(this.gameId).subscribe((game: Game) => {
+        this.gameFormService.setFormValues(game);
+        this.initialFormState = game;
+      });
+    }
+  }
+
+  public goBack(): void {
+    this.location.back();
   }
 
   public getErrorMessage(controlName: string): string {
     return this.validationDisplay.getErrorMessage(controlName, this.gameForm);
+  }
+
+  public dateErrorStatus(): boolean {
+    return this.gameForm.errors?.['dateRequired'] ?? false;
+  }
+
+  public resetDate(): void {
+    this.gameForm.controls.releaseDate.setValue(null);
+  }
+
+  // Function necessary because calendar component doesn't work with ngStyle (UI library making stuff easier irony)
+  public getStyleClass(): string {
+    return this.dateErrorStatus() && (this.gameForm.controls.releaseDate.dirty || this.gameForm.controls.releaseDate.touched) ? 'ng-invalid ng-dirty' : '';
   }
 
   public get purchaseLinks(): FormArray<FormGroup<PurchaseLinksForm>> {
@@ -81,8 +105,27 @@ export class GameFormComponent implements OnInit {
     this.gameFormService.removePurchaseLink(index);
   }
 
-  public resetFormDynamicFields(): void {
+  public resetForm(): void {
     this.gameFormService.resetFormDynamicFields();
+
+    if (this.editForm) {
+      this.gameFormService.setFormValues(this.initialFormState);
+    }
+  }
+
+  private createUpdatedForm(parsedForm: ParsedForm, userId: string): UpdatedForm {
+    return {
+      ...parsedForm,
+      purchaseLinks: parsedForm.purchaseLinks!.map((link: { purchaseLink: string | null }) => (link.purchaseLink ? link.purchaseLink : '')),
+      tags: parsedForm.tags?.map((tag: TagItem) => tag.value) ?? [],
+      owner: userId,
+      title: parsedForm.title || '',
+      platform: parsedForm.platform || '',
+      developer: parsedForm.developer || '',
+      price: parsedForm.price || 0,
+      wishlistPriority: parsedForm.wishlistPriority || 0,
+      releaseStatus: parsedForm.releaseStatus || false,
+    };
   }
 
   protected onSubmit(): void {
@@ -93,41 +136,18 @@ export class GameFormComponent implements OnInit {
     }
 
     const parsedForm: ParsedForm = this.gameForm.getRawValue();
-
-    // TODO: Ask the tutor about this because It's getting out of hand with the amount of data conversions I'm doing.
-    // Because of the linter config I need explicit types for everything.
-    // eslint-disable-next-line complexity
-    // this.authUser.getUserId().subscribe((userId: string) => {
-    //   const updatedForm: UpdatedForm = {
-    //     ...parsedForm,
-    //     purchaseLinks: parsedForm.purchaseLinks!.map((link: { purchaseLink: string | null }) => (link.purchaseLink ? link.purchaseLink : '')),
-    //     tags: parsedForm.tags?.map((tag: TagItem) => tag.value) ?? [],
-    //     owner: userId,
-    //     title: parsedForm.title || '',
-    //     platform: parsedForm.platform || '',
-    //     genre: parsedForm.genre || '',
-    //     developer: parsedForm.developer || '',
-    //     price: parsedForm.price || 0,
-    //     wishlistPriority: parsedForm.wishlistPriority || 0,
-    //     releaseStatus: parsedForm.releaseStatus || false,
-    //   };
-    //   console.log(updatedForm);
-    //   this.gamesApiService.createGame(updatedForm).subscribe((response: Game) => {
-    //     console.log(response);
-    //   });
-    // });
-
     this.authUser.getUserId().subscribe((userId: string) => {
-      const updatedForm: any = {
-        ...parsedForm,
-        purchaseLinks: parsedForm.purchaseLinks!.map((link: { purchaseLink: string | null }) => (link.purchaseLink ? link.purchaseLink : '')),
-        tags: parsedForm.tags?.map((tag: TagItem) => tag.value) ?? [],
-        owner: userId,
-      };
-      console.log(updatedForm);
-      this.gamesApiService.createGame(updatedForm).subscribe((response: Game) => {
-        console.log(response);
-      });
+      const updatedForm: UpdatedForm = this.createUpdatedForm(parsedForm, userId);
+
+      if (this.gameId) {
+        this.gamesApiService.updateGame(this.gameId, updatedForm).subscribe(() => {
+          this.router.navigate(['/game', this.gameId]);
+        });
+      } else {
+        this.gamesApiService.createGame(updatedForm).subscribe(() => {
+          this.router.navigate(['/dashboard']);
+        });
+      }
     });
   }
 }
