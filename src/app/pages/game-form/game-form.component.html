@@ -2,7 +2,7 @@
   <form class="flex flex-column gap-2" [formGroup]="gameForm" appDateRequired (ngSubmit)="onSubmit()">
     <div>
       <img src="../../../assets/game-controller.svg" alt="Image" height="50" width="50" class="mb-1 block mx-auto" />
-      <div class="text-900 text-center mx-6 text-3xl font-medium mb-1">Add a new game</div>
+      <div class="text-900 text-center mx-6 text-3xl font-medium mb-1">{{ editForm ? 'Edit game' : 'Add a new game' }}</div>
     </div>
     <div class="title flex flex-column gap-1">
       <input
@@ -27,17 +27,6 @@
         class="p-error"
         *ngIf="gameForm.controls.platform.invalid && (gameForm.controls.platform.dirty || gameForm.controls.platform.touched)">
         {{ getErrorMessage('platform') }}
-      </small>
-    </div>
-
-    <div class="genre flex flex-column gap-1">
-      <input
-        [ngClass]="{ 'ng-invalid ng-dirty': gameForm.controls.genre.invalid && (gameForm.controls.genre.dirty || gameForm.controls.genre.touched) }"
-        pInputText
-        formControlName="genre"
-        placeholder="Genre" />
-      <small id="genre-help" class="p-error" *ngIf="gameForm.controls.genre.invalid && (gameForm.controls.genre.dirty || gameForm.controls.genre.touched)">
-        {{ getErrorMessage('genre') }}
       </small>
     </div>
 
@@ -89,22 +78,25 @@
     <div class="releaseStatus flex flex-column align-items-center sm:flex-row sm:justify-content-between gap-2">
       <div class="flex gap-2 align-items-center">
         <span class="text-primary-600 font-bold">Is it out yet?</span>
-        <p-toggleButton formControlName="releaseStatus" id="releaseStatusButton" onLabel="No" offLabel="Yes"></p-toggleButton>
+        <p-toggleButton formControlName="releaseStatus" (onChange)="resetDate()" id="releaseStatusButton" onLabel="No" offLabel="Yes"></p-toggleButton>
       </div>
-      <p-button (onClick)="addPurchaseLink()" label="Add shop link"></p-button>
+      <p-button (click)="addPurchaseLink()" label="Add shop link"></p-button>
     </div>
     <div class="date flex flex-column gap-1" *ngIf="gameForm && gameForm.get('releaseStatus')!.value">
       <p-calendar
-        [ngClass]="{ 'ng-invalid ng-dirty': gameForm.controls.title.invalid && (gameForm.controls.title.dirty || gameForm.controls.title.touched) }"
         type="date"
         placeholder="Release Date"
         formControlName="releaseDate"
         [minDate]="date"
         [showIcon]="true"
         [readonlyInput]="true"
+        [class]="getStyleClass()"
         styleClass="w-full" />
-      <small id="title-help" class="p-error" *ngIf="gameForm.controls.title.invalid && (gameForm.controls.title.dirty || gameForm.controls.title.touched)"
-        >{{ getErrorMessage('releaseDate') }}
+      <small
+        id="title-help"
+        class="p-error"
+        *ngIf="dateErrorStatus() === true && (gameForm.controls.releaseDate.dirty || gameForm.controls.releaseDate.touched)">
+        Release date is required if release status is set to true.
       </small>
     </div>
     <div class="flex flex-column gap-2" formArrayName="purchaseLinks">
@@ -112,14 +104,29 @@
         <app-purchase-links-form (remove)="removePurchaseLink(i)" [purchaseLinksForm]="purchaseLinksForm" />
       </div>
     </div>
-    <div class="w-full text-center">
-      <p-multiSelect styleClass="w-full" [options]="tags" [group]="true" formControlName="tags" optionLabel="label" placeholder="Select tags"
-        ><ng-template let-group pTemplate="group">
+    <div class="w-full">
+      <p-multiSelect
+        [ngClass]="{
+          'ng-invalid ng-dirty': gameForm.controls.tags.invalid && (gameForm.controls.tags.dirty || gameForm.controls.tags.touched)
+        }"
+        styleClass="w-full"
+        [options]="tags"
+        [group]="true"
+        formControlName="tags"
+        optionLabel="label"
+        placeholder="Select tags">
+        <ng-template let-group pTemplate="group">
           <div class="flex align-items-center">
             <span>{{ group.label }}</span>
           </div>
-        </ng-template></p-multiSelect
-      >
+        </ng-template>
+      </p-multiSelect>
+      <small
+        id="tags-help"
+        class="p-error"
+        *ngIf="gameForm.controls.wishlistPriority.invalid && (gameForm.controls.wishlistPriority.dirty || gameForm.controls.wishlistPriority.touched)">
+        {{ getErrorMessage('tags') }}
+      </small>
     </div>
     <p-inputGroup> </p-inputGroup
     ><p-inputGroup>
@@ -132,8 +139,8 @@
     </p-inputGroup>
     <div class="flex flex-column sm:flex-row align-items-center mt-2 gap-2 justify-content-center">
       <p-button type="submit" label="Submit"></p-button>
-      <p-button type="reset" (onClick)="resetFormDynamicFields()" label="Reset"></p-button>
-      <p-button type="button" routerLink="/dashboard" label="Cancel"> </p-button>
+      <p-button type="button" (click)="resetForm()" label="Reset"></p-button>
+      <p-button type="button" (click)="goBack()" label="Cancel"> </p-button>
     </div>
   </form>
 </p-card>
