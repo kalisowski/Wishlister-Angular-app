@@ -5,6 +5,7 @@ import { AuthGuard } from '@auth0/auth0-angular';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { GameFormComponent } from './pages/game-form/game-form.component';
 import { GameDetailComponent } from './pages/game-detail/game-detail.component';
+import { DlcFormComponent } from './pages/dlc-form/dlc-form.component';
 
 export const routes: Routes = [
   {
@@ -33,6 +34,26 @@ export const routes: Routes = [
   },
   {
     path: 'game/:id/edit',
+    component: GameFormComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'game/:id/addDLC',
+    component: DlcFormComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'game/:id/dlc/:dlcId',
+    component: DlcFormComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'dlc/:id',
+    component: GameDetailComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'dlc/:id/edit',
     component: GameFormComponent,
     canActivate: [AuthGuard],
   },
