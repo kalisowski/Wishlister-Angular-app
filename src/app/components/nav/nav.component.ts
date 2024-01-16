@@ -1,7 +1,9 @@
 import { CommonModule, DOCUMENT } from '@angular/common';
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { AuthModule, AuthService } from '@auth0/auth0-angular';
-import { MenuItem } from 'primeng/api';
+import type { OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject } from '@angular/core';
+import { AuthService } from '@auth0/auth0-angular';
+import { AuthModule } from '@auth0/auth0-angular';
+import type { MenuItem } from 'primeng/api';
 import { MenubarModule } from 'primeng/menubar';
 import { ProgressBarModule } from 'primeng/progressbar';
 

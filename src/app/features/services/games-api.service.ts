@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { type Observable } from 'rxjs';
 import { type Game } from '../dto/game.model';
 import { environment } from 'src/environments/environment';
-import { CreateGame } from '../dto/create-game.model';
+import type { CreateGame } from '../dto/create-game.model';
 import { HttpHeaders } from '@angular/common/http';
 
 @Injectable({

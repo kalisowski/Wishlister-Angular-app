@@ -1,5 +1,7 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import type { OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
@@ -18,7 +20,9 @@ import { ToggleButtonModule } from 'primeng/togglebutton';
 import { FormsModule } from '@angular/forms';
 import { TriStateCheckboxModule } from 'primeng/tristatecheckbox';
 import { type HttpErrorResponse } from '@angular/common/http';
-import { PaginatorModule, PaginatorState } from 'primeng/paginator';
+import type { PaginatorState } from 'primeng/paginator';
+import { PaginatorModule } from 'primeng/paginator';
+import { Dlc } from 'src/app/features/dto/dlc.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -148,7 +152,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
     } else if (this.activeSearchButton !== '') {
       this.processedGames = this.processedGames.filter((game: Game) => {
-        const value: string | number | boolean | string[] = game[this.activeSearchButton];
+        const value: Game[keyof Game] = game[this.activeSearchButton];
         if (typeof value === 'string') {
           return value.toLowerCase().includes(this.searchInput.toLowerCase());
         } else if (typeof value === 'number') {

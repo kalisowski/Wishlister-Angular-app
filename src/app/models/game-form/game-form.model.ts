@@ -1,5 +1,5 @@
-import { FormArray, FormControl, FormGroup } from '@angular/forms';
-import { TagItem } from './tags.model';
+import type { FormArray, FormControl, FormGroup } from '@angular/forms';
+import type { TagItem } from './tags.model';
 
 export interface GameForm {
   readonly title: FormControl<string | null>;
