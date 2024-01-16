@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { type GameForm, type ParsedForm, type PurchaseLinksForm } from '../models/game-form/game-form.model';
+import type { UpdatedForm, GameForm, ParsedForm, PurchaseLinksForm } from '../models/game-form/game-form.model';
 import { type TagItem, groupedTags } from '../models/game-form/tags.model';
 import { type Game } from '../features/dto/game.model';
 
@@ -23,6 +23,21 @@ export class GameFormService {
     purchaseLinks: new FormArray<FormGroup<PurchaseLinksForm>>([]),
     personalNotes: new FormControl(null, Validators.maxLength(255)),
   });
+
+  public createUpdatedForm(parsedForm: ParsedForm, userId: string): UpdatedForm {
+    return {
+      ...parsedForm,
+      purchaseLinks: parsedForm.purchaseLinks!.map((link: { purchaseLink: string | null }) => (link.purchaseLink ? link.purchaseLink : '')),
+      tags: parsedForm.tags?.map((tag: TagItem) => tag.value) ?? [],
+      owner: userId,
+      title: parsedForm.title || '',
+      platform: parsedForm.platform || '',
+      developer: parsedForm.developer || '',
+      price: parsedForm.price || 0,
+      wishlistPriority: parsedForm.wishlistPriority || 0,
+      releaseStatus: parsedForm.releaseStatus || false,
+    };
+  }
 
   public setFormValues(game: Game): void {
     const purchaseLinks: FormArray = this.gameForm.get('purchaseLinks') as FormArray;
