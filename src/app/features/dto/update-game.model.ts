@@ -1,4 +1,4 @@
-import { TagItem } from 'src/app/models/game-form/tags.model';
+import type { TagItem } from 'src/app/models/game-form/tags.model';
 
 export interface CreateGame {
   readonly title: string;

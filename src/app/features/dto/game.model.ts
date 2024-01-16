@@ -1,5 +1,7 @@
+import { Dlc } from './dlc.model';
+
 export interface Game {
-  readonly [key: string]: string | number | boolean | string[];
+  readonly [key: string]: string | number | boolean | string[] | Dlc[];
   readonly id: string;
   readonly title: string;
   readonly platform: string;
@@ -11,4 +13,5 @@ export interface Game {
   readonly tags: string[];
   readonly purchaseLinks: string[];
   readonly personalNotes: string;
+  readonly dlcs: Dlc[];
 }
