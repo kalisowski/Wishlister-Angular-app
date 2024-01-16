@@ -1,0 +1,39 @@
+<div *ngIf="loading" class="mt-5"><p-progressSpinner></p-progressSpinner></div>
+<p-card *ngIf="!loading" styleClass="bg-primary-50 border-1 shadow-2 shadow-primary border-primary flex my-4 justify-content-center">
+  <form class="flex flex-column gap-2" [formGroup]="dlcForm" appDateRequired (ngSubmit)="onSubmit()">
+    <div>
+      <img src="../../../assets/game-controller.svg" alt="Image" height="50" width="50" class="mb-1 block mx-auto" />
+      <div class="text-900 text-center mx-6 text-3xl font-medium mb-1">Add a new DLC</div>
+    </div>
+    <div class="title flex flex-column gap-1">
+      <input
+        [ngClass]="{ 'ng-invalid ng-dirty': dlcForm.controls.title.invalid && (dlcForm.controls.title.dirty || dlcForm.controls.title.touched) }"
+        pInputText
+        formControlName="title"
+        placeholder="Title"
+        class="ng-invalid ng-dirty" />
+      <small id="title-help" class="p-error" *ngIf="dlcForm.controls.title.invalid && (dlcForm.controls.title.dirty || dlcForm.controls.title.touched)">
+        {{ getErrorMessage('title') }}
+      </small>
+    </div>
+
+    <div class="price flex flex-column gap-1">
+      <input
+        [ngClass]="{ 'ng-invalid ng-dirty': dlcForm.controls.price.invalid && (dlcForm.controls.price.dirty || dlcForm.controls.price.touched) }"
+        pInputText
+        min="0"
+        formControlName="price"
+        placeholder="Price $"
+        type="number" />
+      <small id="price-help" class="p-error" *ngIf="dlcForm.controls.price.invalid && (dlcForm.controls.price.dirty || dlcForm.controls.price.touched)">
+        {{ getErrorMessage('price') }}
+      </small>
+    </div>
+
+    <div class="flex flex-column sm:flex-row align-items-center mt-2 gap-2 justify-content-center">
+      <p-button type="submit" label="Submit"></p-button>
+      <p-button type="button" (click)="resetForm()" label="Reset"></p-button>
+      <p-button type="button" (click)="goBack()" label="Cancel"> </p-button>
+    </div>
+  </form>
+</p-card>
