@@ -1,4 +1,5 @@
-<p-card styleClass="bg-primary-50 border-1 shadow-2 shadow-primary border-primary flex my-4 justify-content-center">
+<div *ngIf="loading" class="mt-5"><p-progressSpinner></p-progressSpinner></div>
+<p-card *ngIf="!loading" styleClass="bg-primary-50 border-1 shadow-2 shadow-primary border-primary flex my-4 justify-content-center">
   <form class="flex flex-column gap-2" [formGroup]="gameForm" appDateRequired (ngSubmit)="onSubmit()">
     <div>
       <img src="../../../assets/game-controller.svg" alt="Image" height="50" width="50" class="mb-1 block mx-auto" />
@@ -139,8 +140,8 @@
     </p-inputGroup>
     <div class="flex flex-column sm:flex-row align-items-center mt-2 gap-2 justify-content-center">
       <p-button type="submit" label="Submit"></p-button>
-      <p-button type="button" (click)="resetForm()" label="Reset"></p-button>
-      <p-button type="button" (click)="goBack()" label="Cancel"> </p-button>
+      <p-button type="button" (click)="confirmFormReset()" label="Reset"></p-button>
+      <p-button type="button" (click)="confirmFormCancel()" label="Cancel"> </p-button>
     </div>
   </form>
 </p-card>

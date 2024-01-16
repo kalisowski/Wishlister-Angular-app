@@ -3,7 +3,7 @@
 </ng-container>
 <ng-template #loading>
   <div class="flex flex-column align-items-center h-full">
-    <div class="flex tw-bg-slate-50 p-2 sm:mt-2 gap-2 border-round border-1 align-items-center justify-content-center flex-wrap w-full sm:w-fit">
+    <div class="flex bg-gray-50 p-2 sm:mt-2 gap-2 border-round border-1 align-items-center justify-content-center flex-wrap w-full sm:w-fit">
       <span class="p-input-icon-left">
         <i class="pi pi-search"></i>
         <input
@@ -16,7 +16,7 @@
       </span>
       <!-- due to primeNG button syntax linter config signals an error -->
       <p-toggleButton (onChange)="handleDisplayChange()" [onIcon]="'pi pi-th-large'" offIcon="pi pi-list"></p-toggleButton>
-      <p-button [outlined]="true" (click)="addNewGame()">
+      <p-button [outlined]="true" (click)="addNewGame()" styleClass="bg-white">
         <i class="pi pi-plus py-1"></i>
         <span class="ml-2 font-bold hidden sm:inline">Add game</span>
       </p-button>
@@ -29,7 +29,7 @@
     </div>
     <div
       *ngIf="!gamesLoading && displayChecked && !error"
-      class="flex justify-content-center w-screen tw-bg-slate-50 tableSize overflow-auto py-3 my-2 px-0 mx-0 border-2 shadow-1">
+      class="flex justify-content-center w-screen bg-gray-50 tableSize overflow-auto py-3 my-2 px-0 mx-0 border-2 shadow-1">
       <div class="grid w-12 md:w-10">
         <ng-container *ngFor="let game of processedGames">
           <!-- Grid layout -->
@@ -47,12 +47,12 @@
     </div>
     <div
       *ngIf="!gamesLoading && !displayChecked && !error"
-      class="flex flex-column align-items-center w-screen tw-bg-slate-50 tableSize overflow-auto shadow-2 my-2">
-      <div class="sticky top-0 flex justify-content-center align-items-center w-full bg-white border-bottom-1 mb-3 tw-bg-slate-50">
+      class="flex flex-column align-items-center w-screen bg-gray-50 tableSize overflow-auto shadow-2 my-2">
+      <div class="sticky top-0 flex justify-content-center align-items-center w-full bg-white border-bottom-1 mb-3 bg-gray-50">
         <div *ngIf="!gamesLoading" class="grid my-1 px-2 w-12 md:w-10">
           <div *ngFor="let key of objectKeys(buttonSortStates)" [ngClass]="buttonSortStates[key].class + ' flex flex-column flex-wrap gap-2'">
             <div class="flex gap-2">
-              <span>{{ key === 'releaseDate' ? 'date' : key !== 'wishlistPriority' ? key : 'priority' }}</span>
+              <span>{{ key === 'releaseDate' ? 'release' : key !== 'wishlistPriority' ? key : 'priority' }}</span>
               <p-triStateCheckbox *ngIf="key === 'releaseDate'" [(ngModel)]="dateState" (click)="processGamesData()" inputId="tricheckbox"></p-triStateCheckbox>
             </div>
             <div class="flex flex-wrap gap-1">
@@ -106,7 +106,7 @@
               <p class="col-2" *ngIf="game.releaseStatus">{{ game.releaseDate }}</p>
               <p class="col-2" *ngIf="!game.releaseStatus">released</p>
               <p class="col-1">{{ game.wishlistPriority }}</p>
-              <p class="col-1">{{ game.price === 0 ? 'F2P' : game.price }}</p>
+              <p class="col-1">{{ game.price === 0 ? 'Free' : (game.price | number : '1.2-2') + '$' }}</p>
             </div>
           </div>
         </div>
