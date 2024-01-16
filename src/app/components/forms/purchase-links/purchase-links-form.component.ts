@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputGroupModule } from 'primeng/inputgroup';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { PurchaseLinksForm } from 'src/app/models/game-form/game-form.model';
+import type { FormGroup } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import type { PurchaseLinksForm } from 'src/app/models/game-form/game-form.model';
 import { ButtonModule } from 'primeng/button';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { RippleModule } from 'primeng/ripple';
