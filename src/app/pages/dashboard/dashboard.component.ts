@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core';
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -22,7 +22,7 @@ import { TriStateCheckboxModule } from 'primeng/tristatecheckbox';
 import { type HttpErrorResponse } from '@angular/common/http';
 import type { PaginatorState } from 'primeng/paginator';
 import { PaginatorModule } from 'primeng/paginator';
-import { Dlc } from 'src/app/features/dto/dlc.model';
+import { BadgeModule } from 'primeng/badge';
 
 @Component({
   selector: 'app-dashboard',
@@ -42,6 +42,7 @@ import { Dlc } from 'src/app/features/dto/dlc.model';
     MessageModule,
     TriStateCheckboxModule,
     PaginatorModule,
+    BadgeModule,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
@@ -50,13 +51,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public activeSortButton: string = 'title';
   public activeSearchButton: string = 'title';
   public buttonSortStates: { [key: string]: { state: boolean; class: string } } = {
-    title: { state: false, class: 'col-2' },
-    platform: { state: false, class: 'col-2' },
-    tags: { state: false, class: 'col-2' },
-    developer: { state: false, class: 'col-2' },
-    releaseDate: { state: false, class: 'col-2' },
-    wishlistPriority: { state: false, class: 'col-1' },
-    price: { state: false, class: 'col-1' },
+    title: { state: false, class: 'sm:col-2' },
+    platform: { state: false, class: 'sm:col-2' },
+    tags: { state: false, class: 'sm:col-2' },
+    developer: { state: false, class: 'sm:col-2' },
+    releaseDate: { state: false, class: 'sm:col-2' },
+    wishlistPriority: { state: false, class: 'sm:col-1' },
+    price: { state: false, class: 'sm:col-1' },
   };
   public buttonSearchStates: { [key: string]: boolean } = {
     title: true,
@@ -68,7 +69,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     releaseDate: false,
   };
   public dateState: boolean | null = null;
-  public displayChecked: boolean = false;
+  public displayMobile: boolean = false;
   public games: Game[] = [];
   public processedGames: Game[] = [];
   public error: HttpErrorResponse | null = null;
@@ -83,7 +84,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   public constructor(private router: Router, private gamesApiService: GamesApiService, private authUser: AuthUserService, private auth: AuthService) {}
 
+  @HostListener('window:resize', ['$event'])
+  public onResize(): void {
+    if (window.matchMedia('(max-width: 575px)').matches) {
+      this.displayMobile = true;
+    } else {
+      this.displayMobile = false;
+    }
+  }
+
   public ngOnInit(): void {
+    if (window.matchMedia('(max-width: 575px)').matches) {
+      this.displayMobile = true;
+    }
     this.authUser.getUserId().subscribe((userId: string) => {
       this.gamesApiService.getGamesOfUser(userId).subscribe({
         next: (games: Game[]) => {
@@ -111,10 +124,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   public processGamesData(): void {
     this.processedGames = this.games;
-    this.filterGames();
-    this.sortGamesByButton();
+    if (this.displayMobile) {
+      this.processedGames = this.processedGames.filter((game: Game) => {
+        return Object.values(game).some((value: Game[keyof Game]) => value !== null && value.toString().toLowerCase().includes(this.searchInput.toLowerCase()));
+      });
+    } else {
+      this.filterGames();
+      this.sortGamesByButton();
+    }
     this.recordsPagi = this.processedGames.length;
-
     const startIndex: number = this.firstPagi;
     const endIndex: number = this.firstPagi + this.rowsPagi;
     this.processedGames = this.processedGames.slice(startIndex, endIndex);
@@ -128,10 +146,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   public addNewGame(): void {
     this.router.navigate(['/game/new']);
-  }
-
-  public handleDisplayChange(): void {
-    this.displayChecked = !this.displayChecked;
   }
 
   public objectKeys(obj: object): string[] {
@@ -168,10 +182,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.processedGames.sort((a: Game, b: Game) => {
       const key: string = this.activeSortButton;
       const order: 1 | -1 = this.buttonSortStates[key].state ? 1 : -1;
-      if (a[key] < b[key]) {
+      if (a[key]! < b[key]!) {
         return -1 * order;
       }
-      if (a[key] > b[key]) {
+      if (a[key]! > b[key]!) {
         return 1 * order;
       }
 
