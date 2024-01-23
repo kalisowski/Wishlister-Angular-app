@@ -21,8 +21,7 @@ import { type Game } from 'src/app/features/dto/game.model';
 import { AuthUserService } from 'src/app/services/auth-user.service';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { ThisReceiver } from '@angular/compiler';
-import { EMPTY, catchError, throwError } from 'rxjs';
+import { EMPTY, catchError } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
@@ -128,7 +127,7 @@ export class GameFormComponent implements OnInit {
   public confirmFormSubmit(): void {
     this.confirmationService.confirm({
       header: 'You are about to submit the form',
-      message: `This add or update the game in the database!`,
+      message: `This will ${this.editForm ? 'update' : 'add'} the game in the database!`,
       accept: () => {
         this.sendForm();
       },
@@ -160,7 +159,6 @@ export class GameFormComponent implements OnInit {
   protected onSubmit(): void {
     if (this.gameForm.invalid) {
       this.gameForm.markAllAsTouched();
-      console.log(this.gameForm);
 
       return;
     }
@@ -178,7 +176,6 @@ export class GameFormComponent implements OnInit {
           .updateGame(this.gameId, updatedForm)
           .pipe(
             catchError((error: HttpErrorResponse) => {
-              console.log(error);
               this.messageService.add({ severity: 'error', summary: `Error ${error.status}`, detail: `Failed to update the game: ${error.statusText}` });
 
               return EMPTY;
@@ -193,7 +190,6 @@ export class GameFormComponent implements OnInit {
           .createGame(updatedForm)
           .pipe(
             catchError((error: HttpErrorResponse) => {
-              console.log(error);
               this.messageService.add({ severity: 'error', summary: `Error ${error.status}`, detail: `Failed to create the game: ${error.statusText}` });
 
               return EMPTY;

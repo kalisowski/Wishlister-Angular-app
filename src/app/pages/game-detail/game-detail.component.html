@@ -1,7 +1,7 @@
 <div class="flex flex-column justify-content-center h-full">
   <div *ngIf="loading"><p-progressSpinner></p-progressSpinner></div>
   <div *ngIf="!loading && !error">
-    <div class="flex flex-column p-3 shadow-3 border-1 border-round">
+    <div class="flex flex-column p-3 shadow-3 border-1 border-round mt-3">
       <div class="flex flex-col">
         <div class="flex flex-col w-full">
           <div class="mb-4">
@@ -70,7 +70,6 @@
         </div>
       </div>
     </div>
-
     <p class="text-center mt-4 mb-2 text-xl font-semibold">{{ (game?.dlcs)!.length > 0 ? 'DLCS:' : "No dlc's available" }}</p>
     <div class="flex justify-content-between mb-3" *ngFor="let dlc of game?.dlcs">
       <p-inputGroup class="border-2 border-round-lg shadow-2">
@@ -78,12 +77,14 @@
           <p>{{ dlc.title }}</p>
           <p>{{ dlc.price | number : '1.2-2' }}$</p>
         </div>
+        <!-- eslint-disable-next-line -->
         <button
           [routerLink]="['/game', game?.id, 'dlc', dlc.dlcId]"
           pButton
           pRipple
           class="p-button-primary p-button-outlined mr-1 my-1"
           icon="pi pi-pencil"></button>
+        <!-- eslint-disable-next-line -->
         <button pButton pRipple class="p-button-danger p-button-outlined mr-1 my-1" (click)="confirmDlcDeletion(dlc.dlcId)" icon="pi pi-trash"></button>
       </p-inputGroup>
     </div>
