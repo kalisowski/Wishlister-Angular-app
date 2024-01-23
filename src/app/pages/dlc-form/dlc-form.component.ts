@@ -15,6 +15,7 @@ import { DlcForm } from 'src/app/models/dlc-form/dlc-form.model';
 import { CreateDlc } from 'src/app/features/dto/create-dlc.model';
 import { Dlc } from 'src/app/features/dto/dlc.model';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-game-form',
@@ -37,7 +38,9 @@ export class DlcFormComponent implements OnInit {
     private validationDisplay: ValidationDisplayService,
     private dlcApiService: DlcApiService,
     private gamesApiService: GamesApiService,
-    private location: Location
+    private location: Location,
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService
   ) {}
 
   public ngOnInit(): void {
@@ -75,6 +78,38 @@ export class DlcFormComponent implements OnInit {
     this.location.back();
   }
 
+  public confirmFormSubmit(): void {
+    this.confirmationService.confirm({
+      header: 'You are about to submit the form',
+      message: `This will ${this.editForm ? 'update' : 'add'} the dlc in the database!`,
+      accept: () => {
+        this.sendForm();
+      },
+    });
+  }
+
+  public confirmFormReset(): void {
+    this.confirmationService.confirm({
+      header: 'You are about to reset the form',
+      message: `This will revert the form to its initial state!`,
+      accept: () => {
+        this.resetForm();
+        this.messageService.add({ severity: 'info', summary: 'Reset', detail: 'Form has been reset' });
+      },
+    });
+  }
+
+  public confirmFormCancel(): void {
+    this.confirmationService.confirm({
+      header: 'You are about to leave the form',
+      message: `This will discard all changes!`,
+      accept: () => {
+        this.goBack();
+        this.messageService.add({ severity: 'info', summary: 'Canceled', detail: 'Form has been discarded' });
+      },
+    });
+  }
+
   public getErrorMessage(controlName: string): string {
     return this.validationDisplay.getErrorMessage(controlName, this.dlcForm);
   }
@@ -86,12 +121,7 @@ export class DlcFormComponent implements OnInit {
     }
   }
 
-  protected onSubmit(): void {
-    if (this.dlcForm.invalid) {
-      this.dlcForm.markAllAsTouched();
-
-      return;
-    }
+  private sendForm(): void {
     if (this.gameId && !this.dlcId) {
       const dlcData: CreateDlc = this.dlcForm.value as CreateDlc;
       this.dlcApiService.addDlc(this.gameId, dlcData).subscribe(() => this.location.back());
@@ -100,5 +130,14 @@ export class DlcFormComponent implements OnInit {
       const dlcData: CreateDlc = this.dlcForm.value as CreateDlc;
       this.dlcApiService.updateDlc(this.dlcId, dlcData).subscribe(() => this.location.back());
     }
+  }
+
+  protected onSubmit(): void {
+    if (this.dlcForm.invalid) {
+      this.dlcForm.markAllAsTouched();
+
+      return;
+    }
+    this.confirmFormSubmit();
   }
 }

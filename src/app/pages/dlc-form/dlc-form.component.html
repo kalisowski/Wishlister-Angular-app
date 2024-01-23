@@ -3,7 +3,7 @@
   <form class="flex flex-column gap-2" [formGroup]="dlcForm" appDateRequired (ngSubmit)="onSubmit()">
     <div>
       <img src="../../../assets/game-controller.svg" alt="Image" height="50" width="50" class="mb-1 block mx-auto" />
-      <div class="text-900 text-center mx-6 text-3xl font-medium mb-1">Add a new DLC</div>
+      <div class="text-900 text-center mx-6 text-3xl font-medium mb-1">{{ editForm ? 'Edit dlc' : 'Add a new dlc' }}</div>
     </div>
     <div class="title flex flex-column gap-1">
       <input
@@ -32,8 +32,8 @@
 
     <div class="flex flex-column sm:flex-row align-items-center mt-2 gap-2 justify-content-center">
       <p-button type="submit" label="Submit"></p-button>
-      <p-button type="button" (click)="resetForm()" label="Reset"></p-button>
-      <p-button type="button" (click)="goBack()" label="Cancel"> </p-button>
+      <p-button type="button" (click)="confirmFormReset()" label="Reset"></p-button>
+      <p-button type="button" (click)="confirmFormCancel()" label="Cancel"> </p-button>
     </div>
   </form>
 </p-card>
